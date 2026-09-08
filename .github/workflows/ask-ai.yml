@@ -15,6 +15,7 @@ jobs:
       ACTIONS_STEP_DEBUG: true
 
     steps:
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
 
       - name: Install Copilot CLI
@@ -22,13 +23,13 @@ jobs:
 
       - name: AI Inference
         id: ai-response
-        uses: actions/ai-inference@v3
+        uses: actions/ai-inference@v1
         with:
-          token: ${{ github.token }}
           prompt: |
             Give me a programming joke.
+          model: gpt-4.1
         env:
-          COPILOT_GITHUB_TOKEN: ${{ github.token }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
 
       - name: Display AI Response
         run: |
