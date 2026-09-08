@@ -21,6 +21,8 @@ jobs:
         with:
           prompt: |
             Give me a programming joke.
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Display AI Response
         run: |
