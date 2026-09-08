@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  contents: read
   copilot-requests: write
 
 jobs:
@@ -26,7 +27,7 @@ jobs:
           prompt: |
             Give me a programming joke.
         env:
-          COPILOT_GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Display AI Response
         run: |
