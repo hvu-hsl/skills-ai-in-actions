@@ -18,21 +18,28 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
 
-      - name: Install Copilot CLI
-        run: npm install -g @github/copilot
-
       - name: AI Inference
         id: ai-response
-        uses: actions/ai-inference@v1
-        with:
-          prompt: |
-            Give me a programming joke.
-          model: gpt-4.1
         env:
-          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_PAT }}
-
-      - name: Display AI Response
+          AZURE_AI_ENDPOINT: ${{ secrets.AZURE_AI_ENDPOINT }}
+          AZURE_AI_KEY: ${{ secrets.AZURE_AI_KEY }}
+          AZURE_AI_MODEL: ${{ secrets.AZURE_AI_MODEL }}
         run: |
-          echo "## 🤖 AI Response" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.ai-response.outputs.response }}" >> $GITHUB_STEP_SUMMARY
+          RESPONSE=$(curl -s \
+            -X POST "${AZURE_AI_ENDPOINT}/openai/v1/responses" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${AZURE_AI_KEY}" \
+            -d "{
+              \"model\": \"${AZURE_AI_MODEL}\",
+              \"input\": \"Give me a programming joke.\"
+            }")
+      
+          echo "$RESPONSE"
+      
+          CONTENT=$(echo "$RESPONSE" | jq -r '.output[0].content[0].text')
+      
+          {
+            echo "response<<EOF"
+            echo "$CONTENT"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
